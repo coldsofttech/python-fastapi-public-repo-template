@@ -30,6 +30,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.3.2
+      # Actions are pinned to version tags on purpose (Dependabot keeps them current), so the
+      # rule that asks for commit SHAs is excluded.
       - name: Run Semgrep
         run: >
           uvx semgrep scan
@@ -38,6 +40,7 @@ jobs:
           --config p/dockerfile
           --config p/github-actions
           --exclude tests
+          --exclude-rule yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag
           --error
           --sarif --output semgrep.sarif
           .
