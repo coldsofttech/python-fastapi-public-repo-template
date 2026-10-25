@@ -3,35 +3,48 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "python-public-repo-template"
+name = "python-fastapi-public-repo-template"
 dynamic = ["version"]
-description = "Python package description."
+description = "Python HTTP API description."
+keywords = ["api", "fastapi"]
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "coldsofttech" }]
 classifiers = [
+  "Framework :: FastAPI",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3.15",
+  "Topic :: Internet :: WWW/HTTP",
   "Typing :: Typed",
 ]
-dependencies = []
+dependencies = [
+  "fastapi>=0.115",
+  "pydantic-settings>=2.6",
+  "pyjwt>=2.9",
+  "uvicorn[standard]>=0.32",
+]
+
+[project.scripts]
+example-api = "example_api.__main__:main"
 
 [project.urls]
-Homepage = "https://github.com/coldsofttech/python-public-repo-template"
-Issues = "https://github.com/coldsofttech/python-public-repo-template/issues"
-Changelog = "https://github.com/coldsofttech/python-public-repo-template/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/coldsofttech/python-fastapi-public-repo-template"
+Issues = "https://github.com/coldsofttech/python-fastapi-public-repo-template/issues"
+Changelog = "https://github.com/coldsofttech/python-fastapi-public-repo-template/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 dev = [
+  "httpx>=0.27",
   "mypy>=1.13",
   "pre-commit>=4.0",
   "pytest>=8.3",
+  "schemathesis>=4.0",
   "pytest-cov>=6.0",
   "pytest-xdist>=3.6",
   "ruff>=0.8",
@@ -41,7 +54,7 @@ dev = [
 path = "src/example_package/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/example_package"]
+packages = ["src/example_package", "src/example_api"]
 
 [tool.ruff]
 line-length = 100
@@ -49,19 +62,20 @@ src = ["src", "tests"]
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["B", "C4", "E", "F", "I", "PT", "RUF", "S", "SIM", "UP", "W"]
+select = ["B", "C4", "E", "F", "I", "PT", "RUF", "S", "SIM", "T20", "UP", "W"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S603"]  # assert and subprocess are fine in tests
-"scripts/**" = ["S603", "S607"]  # scripts call the trusted gh CLI
+"scripts/**" = ["S603", "S607", "T201"]  # scripts call the trusted gh CLI
 
 [tool.mypy]
 strict = true
+plugins = ["pydantic.mypy"]
 files = ["src", "tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-m 'not integration' --strict-markers --cov=example_package --cov-report=term-missing --cov-fail-under=80"
+addopts = "-m 'not integration' --strict-markers --cov=example_package --cov=example_api --cov-report=term-missing --cov-fail-under=80"
 markers = ["integration: slower end-to-end tests, run in CI but not by default or in pre-commit"]
 
 [tool.coverage.run]

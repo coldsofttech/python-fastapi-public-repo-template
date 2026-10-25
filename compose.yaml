@@ -1,0 +1,12 @@
+services:
+  api:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # The image hides the interactive docs by default; show them for local use.
+      EXAMPLE_API_DOCS_ENABLED: "true"
+    restart: unless-stopped
