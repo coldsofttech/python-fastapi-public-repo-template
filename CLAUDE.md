@@ -54,7 +54,28 @@ These apply on top of the rules above.
     `uv run mypy <file>`. Coverage must stay at or above the minimum in `pyproject.toml`. Put slow or end-to-end tests in
     `tests/integration/`; they are excluded from the default run and only run with `-m integration`.
 
-12. **Dependencies and releases**: keep runtime `dependencies` minimal. Don't change the version
+12. **Dependencies and releases**: keep runtime `dependencies` minimal. FastAPI, Uvicorn, pydantic-settings and PyJWT are the
+    API's accepted dependencies; justify any other new one. Don't change the version
     or publish; releases are cut by the maintainer through a GitHub release.
+
+13. **API layering**: `src/example_api/` only validates input, authenticates and shapes responses;
+    business logic belongs in `src/example_package/`, which knows nothing about HTTP. Give every
+    route a typed response model, use `def` for blocking work and `async def` only when everything
+    inside is awaited, and never `print` (use `logging`).
+
+14. **API behavior and docs**: errors use the problem details format from `example_api/errors.py`,
+    and 500 responses never expose details. Never log or return secrets. Test routes with
+    `TestClient` and cover the real server in `tests/integration/`. After changing routes or
+    schemas, regenerate `docs/openapi.json` (`uv run python scripts/export_openapi.py`) and update
+    `docs/api.md`.
+
+15. **Container and releases**: keep the Docker image non-root and small, and keep publishing to
+    GHCR and PyPI off by default (`PUBLISH_GHCR` and `PUBLISH_PYPI` variables) unless the
+    maintainer turns them on.
+
+16. **Security**: keep authentication, rate limiting, security headers and the body limit enabled
+    unless the maintainer says otherwise, never log or return secrets, and don't add `# noqa` or
+    `# nosemgrep` without a reason in the comment. Document any new setting in `docs/api.md` and
+    `.env.example`, and any new protection in `docs/security.md`.
 
 <!-- markdownlint-enable MD029 -->
