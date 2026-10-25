@@ -40,3 +40,6 @@ dist/
 .coverage.*
 htmlcov/
 coverage.xml
+
+# Schemathesis cache
+.schemathesis/
