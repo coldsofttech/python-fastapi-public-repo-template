@@ -15,6 +15,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --no-editable
 
 FROM python:3.13-slim
+# Pull in the patched zlib1g (CVE-2026-76844, CVE-2026-85091) ahead of the base image refresh.
+RUN apt-get update \
+    && apt-get install --no-install-recommends --only-upgrade --yes zlib1g=1:1.3.dfsg+really1.3.1-1+deb13u1 \
+    && rm -rf /var/lib/apt/lists/*
 RUN useradd --create-home --uid 10001 app
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
